@@ -1,12 +1,14 @@
 import mongoose, { Schema } from 'mongoose'
-import { IPost } from '../interfaces'
+import { TPost } from '../types'
 
-const PostSchema: Schema = new Schema<IPost>({
+interface IPost extends TPost, Document {}
+
+const PostSchema = new Schema<IPost>({
   title: { type: String, required: true, unique: true },
   desc: { type: String, required: true },
   author: { type: String, required: true },
 })
 
-const model = mongoose.model('User', PostSchema)
+const model = mongoose.model<IPost>('Posts', PostSchema)
 
 export default model
