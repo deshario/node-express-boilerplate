@@ -1,10 +1,12 @@
-import { IVerifyOptions } from 'passport-local'
+import { VerifyFunction } from 'passport-local'
 
-export type TDoneCallback = (
-  error: unknown,
-  user?: Express.User | false,
-  options?: IVerifyOptions,
-) => void
+export type TDoneCallback = Parameters<VerifyFunction>[2]
+
+export type TExpressAuthUser = Express.User | false | null
+
+export type TExpressAuthInfo = {
+  message: string
+}
 
 export type TJwtPayload = {
   id: string

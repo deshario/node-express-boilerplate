@@ -1,16 +1,15 @@
 import passport from 'passport'
 import { Request, Response, NextFunction } from 'express'
-import { IVerifyOptions } from 'passport-local'
+import { TExpressAuthUser, TExpressAuthInfo } from '../interfaces'
 
 export const checkAuthentication = (req: Request, res: Response, next: NextFunction) => {
   passport.authenticate(
     'jwt',
     { session: false },
-    (err: unknown, user: Express.User | false, info: IVerifyOptions) => {
+    (err: unknown, user?: TExpressAuthUser, info?: TExpressAuthInfo) => {
       if (err) return next(err)
       if (!user) {
-        const error = info?.message || 'Not authenticated'
-        return res.status(401).json({ error })
+        return res.status(401).json({ error: info?.message || 'Invalid credentials' })
       }
       req.user = user
       return next()
@@ -21,10 +20,10 @@ export const checkAuthentication = (req: Request, res: Response, next: NextFunct
 export const authenticate = (req: Request, res: Response, next: NextFunction) => {
   passport.authenticate(
     'local',
-    (err: unknown, user: Express.User | false, info: IVerifyOptions) => {
+    (err: unknown, user?: TExpressAuthUser, info?: TExpressAuthInfo) => {
       if (err) return next(err)
       if (!user) {
-        return res.status(401).json({ success: false, error: info.message })
+        return res.status(401).json({ error: info?.message || 'Invalid credentials' })
       }
       req.user = user
       return next()
