@@ -6,7 +6,7 @@ import {
   IRequestBody,
   IRequestParams,
   IRequestParamsBody,
-} from '../types'
+} from '../../interfaces'
 import Posts from './model'
 
 const getPosts = async (req: Request, res: IResponse<TPost[]>) => {

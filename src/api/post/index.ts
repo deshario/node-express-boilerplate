@@ -1,6 +1,6 @@
 import express from 'express'
 import postsController from './controller'
-import { validateNewPost, validatePostId } from '../middlewares/validators'
+import { validateNewPost, validatePostId } from '../../middlewares/validators'
 
 const router = express.Router()
 

@@ -1,8 +1,9 @@
 import mongoose from 'mongoose'
+import env from '../config/environment'
 
 export const connectMongo = async () => {
   try {
-    await mongoose.connect('mongodb://localhost:27017/nodeExpress')
+    await mongoose.connect(env.mongo.url)
     console.info('⚡️Connected to database')
   } catch (err) {
     console.log('Database connection failed')

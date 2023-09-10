@@ -1,16 +1,29 @@
 import express from 'express'
+import passport from 'passport'
 import routes from './src/routes'
+import session from 'express-session'
+import cookieParser from 'cookie-parser'
 import { connectMongo } from './src/services/mongo'
-import 'dotenv/config'
+import env from './src/config/environment'
 
 const app = express()
-const port = process.env.PORT
 
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
+app.use(
+  session({
+    resave: false,
+    saveUninitialized: false,
+    secret: env.secret.sessionCookie,
+  }),
+)
+app.use(cookieParser())
+app.use(express.json()).use(express.urlencoded({ extended: true }))
+
+app.use(passport.initialize())
+app.use(passport.session())
+
 app.use(routes)
 
-app.listen(port, () => {
-  console.log(`\n⚡️Server running at ${port}\n`)
+app.listen(env.express.port, () => {
+  console.log(`\n⚡️Server running at ${env.express.port}\n`)
   connectMongo()
 })
