@@ -1,4 +1,5 @@
 import express from 'express'
+import helmet from 'helmet'
 import passport from 'passport'
 import routes from './src/routes'
 import session from 'express-session'
@@ -15,6 +16,7 @@ app.use(
     secret: env.secret.sessionCookie,
   }),
 )
+app.use(helmet())
 app.use(cookieParser())
 app.use(express.json()).use(express.urlencoded({ extended: true }))
 

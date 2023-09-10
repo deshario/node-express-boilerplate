@@ -1,12 +1,8 @@
 import bcrypt from 'bcrypt'
 import mongoose, { Schema, Document } from 'mongoose'
+import { TUser } from '../../interfaces'
 
-export interface IUser extends Document {
-  _id: string
-  username: string
-  email: string
-  password: string
-}
+interface IUser extends TUser, Document {}
 
 export interface IUserDocument extends IUser {
   verifyPassword: (password: string) => boolean

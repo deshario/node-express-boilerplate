@@ -3,15 +3,15 @@ import passport from 'passport'
 import jwt from 'jsonwebtoken'
 import User from '../api/user/model'
 import env from '../config/environment'
-import { setupLocalStrategy } from './local/passport'
 import { setupJWTStrategy } from './jwt/passport'
-import { checkAuthentication } from '../middlewares/validators'
+import { setupLocalStrategy } from './local/passport'
+import { loginSchema, registerSchema } from '../api/user/schema'
+import { checkAuthentication, validateSchema } from '../middlewares'
 
-// Initialize strategies
+// Setup strategies
 setupLocalStrategy()
 setupJWTStrategy()
 
-// Serialize and deserialize user
 passport.serializeUser((user, done) => done(null, user._id))
 passport.deserializeUser((userId, done) => {
   User.findById(userId).then((user) => done(null, user))
@@ -19,7 +19,7 @@ passport.deserializeUser((userId, done) => {
 
 const router = express.Router()
 
-router.post('/login', passport.authenticate('local'), (req, res) => {
+router.post('/login', validateSchema(loginSchema), passport.authenticate('local'), (req, res) => {
   const user = req.user!
   const payload = { id: user._id, email: user.email }
   const accessToken = jwt.sign(payload, env.secret.accessToken, { expiresIn: '5m' })
@@ -27,11 +27,8 @@ router.post('/login', passport.authenticate('local'), (req, res) => {
   return res.json({ accessToken, refreshToken })
 })
 
-router.post('/register', async (req, res) => {
-  const { username, email, password } = req.body
-  if (!username || !email || !password) {
-    return res.json({ success: false, message: 'Please provide all fields' })
-  }
+router.post('/register', validateSchema(registerSchema), async (req, res) => {
+  const { username, email } = req.body
   const existingUser = await User.findOne({ $or: [{ username }, { email }] })
   if (existingUser) {
     return res.json({ success: false, message: 'Please choose unique username and email' })
