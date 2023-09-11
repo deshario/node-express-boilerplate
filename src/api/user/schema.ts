@@ -10,3 +10,7 @@ export const registerSchema = Joi.object().keys({
   email: Joi.string().email().required(),
   password: Joi.string().required(),
 })
+
+export const refreshTokenSchema = Joi.object().keys({
+  refreshToken: Joi.string().required(),
+})
