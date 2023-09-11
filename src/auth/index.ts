@@ -1,16 +1,15 @@
 import express, { Request, Response } from 'express'
 import passport from 'passport'
-import jwt from 'jsonwebtoken'
 import User from '../api/user/model'
-import env from '../config/environment'
 import { setupJWTStrategy } from './jwt/passport'
 import { setupLocalStrategy } from './local/passport'
+import { signAccessToken, signRefreshToken } from '../services'
 import { loginSchema, registerSchema, refreshTokenSchema } from '../api/user/schema'
 import {
   authenticate,
   validateSchema,
-  verifyRefreshToken,
   checkAuthentication,
+  validateRefreshToken,
 } from '../middlewares'
 
 // Setup strategies
@@ -29,8 +28,8 @@ router.post(
   [validateSchema(loginSchema), authenticate],
   (req: Request, res: Response) => {
     const payload = { id: req.user!._id, email: req.user!.email }
-    const accessToken = jwt.sign(payload, env.secret.accessToken, { expiresIn: '5m' })
-    const refreshToken = jwt.sign(payload, env.secret.refreshToken, { expiresIn: '7d' })
+    const accessToken = signAccessToken(payload)
+    const refreshToken = signRefreshToken(payload)
     return res.json({ success: true, accessToken, refreshToken })
   },
 )
@@ -51,10 +50,10 @@ router.post('/profile', checkAuthentication, (req: Request, res: Response) => {
 
 router.post(
   '/refreshToken',
-  [validateSchema(refreshTokenSchema), verifyRefreshToken],
+  [validateSchema(refreshTokenSchema), validateRefreshToken],
   (req: Request, res: Response) => {
     const payload = { id: req.user!._id, email: req.user!.email }
-    const accessToken = jwt.sign(payload, env.secret.accessToken, { expiresIn: '5m' })
+    const accessToken = signAccessToken(payload)
     res.json({ success: true, accessToken })
   },
 )

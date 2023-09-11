@@ -4,7 +4,7 @@ import passport from 'passport'
 import routes from './src/routes'
 import session from 'express-session'
 import cookieParser from 'cookie-parser'
-import { connectMongo } from './src/services/mongo'
+import { connectMongo } from './src/services'
 import env from './src/config/environment'
 
 const app = express()

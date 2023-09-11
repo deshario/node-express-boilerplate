@@ -1,8 +1,7 @@
-import jwt from 'jsonwebtoken'
 import passport from 'passport'
 import { Request, Response, NextFunction } from 'express'
-import { TExpressAuthUser, TExpressAuthInfo, TJwtPayload } from '../interfaces'
-import env from '../config/environment'
+import { TExpressAuthUser, TExpressAuthInfo } from '../interfaces'
+import { verifyRefreshToken } from '../services'
 
 export const checkAuthentication = (req: Request, res: Response, next: NextFunction) => {
   passport.authenticate(
@@ -35,12 +34,12 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
   )(req, res, next)
 }
 
-export const verifyRefreshToken = (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const payload = jwt.verify(req.body.refreshToken, env.secret.refreshToken) as TJwtPayload
+export const validateRefreshToken = (req: Request, res: Response, next: NextFunction) => {
+  const payload = verifyRefreshToken(req.body.refreshToken)
+  if (payload) {
     req.user = { _id: payload.id, email: payload.email }
     return next()
-  } catch (err) {
+  } else {
     return res.status(401).json({ success: false, error: 'Invalid refresh token' })
   }
 }

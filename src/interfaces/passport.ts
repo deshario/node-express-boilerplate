@@ -14,3 +14,5 @@ export type TJwtPayload = {
   iat: number
   exp: number
 }
+
+export type TJwtSignPayload = Pick<TJwtPayload, 'id' | 'email'>
