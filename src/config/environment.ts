@@ -11,6 +11,12 @@ const environment = {
     accessToken: process.env.ACCESS_TOKEN_SECRET || '1A1zP1eP5QGefi2DM',
     refreshToken: process.env.REFRESH_TOKEN_SECRET || 'PTfTL5SLmv7DivfNa',
   },
+  auth: {
+    google: {
+      clientID: process.env.GOOGLE_CLIENT_ID || '',
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+    },
+  },
 }
 
 export default environment

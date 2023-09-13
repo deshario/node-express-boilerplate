@@ -1,8 +1,9 @@
 import express from 'express'
 import userController from './controller'
+import { checkAuthentication } from '../../middlewares'
 
 const router = express.Router()
 
-router.get('/', userController.getUsers)
+router.get('/', checkAuthentication, userController.getUsers)
 
 export default router

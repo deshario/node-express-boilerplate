@@ -12,7 +12,19 @@ const UserSchema = new Schema<IUserDocument>(
   {
     username: { type: String, unique: true, required: true, trim: true },
     email: { type: String, unique: true, required: true, trim: true },
-    password: { type: String, required: true, select: false },
+    password: {
+      type: String,
+      select: false,
+      required(this: IUser): boolean {
+        return this.provider === 'local'
+      },
+    },
+    provider: {
+      type: String,
+      enum: ['local', 'google'],
+      default: 'local',
+    },
+    googleId: { type: String },
   },
   { timestamps: true, versionKey: false },
 )

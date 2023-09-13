@@ -10,9 +10,7 @@ const app = express()
 app.use(helmet())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-
 app.use(passport.initialize())
-
 app.use(routes)
 
 app.listen(env.express.port, () => {

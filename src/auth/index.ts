@@ -1,20 +1,16 @@
-import express, { Request, Response } from 'express'
+import express from 'express'
 import passport from 'passport'
 import User from '../api/user/model'
+import token from './jwt'
+import local from './local'
+import google from './google'
 import { setupJWTStrategy } from './jwt/passport'
 import { setupLocalStrategy } from './local/passport'
-import { signAccessToken, signRefreshToken } from '../services'
-import { loginSchema, registerSchema, refreshTokenSchema } from '../api/user/schema'
-import {
-  authenticate,
-  validateSchema,
-  checkAuthentication,
-  validateRefreshToken,
-} from '../middlewares'
+import { setupGoogleStrategy } from './google/passport'
 
-// Setup strategies
-setupLocalStrategy()
 setupJWTStrategy()
+setupLocalStrategy()
+setupGoogleStrategy()
 
 passport.serializeUser((user, done) => done(null, user._id))
 passport.deserializeUser((userId, done) => {
@@ -23,39 +19,8 @@ passport.deserializeUser((userId, done) => {
 
 const router = express.Router()
 
-router.post(
-  '/login',
-  [validateSchema(loginSchema), authenticate],
-  (req: Request, res: Response) => {
-    const payload = { id: req.user!._id, email: req.user!.email }
-    const accessToken = signAccessToken(payload)
-    const refreshToken = signRefreshToken(payload)
-    return res.json({ success: true, accessToken, refreshToken })
-  },
-)
-
-router.post('/register', validateSchema(registerSchema), async (req: Request, res: Response) => {
-  const { username, email } = req.body
-  const existingUser = await User.findOne({ $or: [{ username }, { email }] })
-  if (existingUser) {
-    return res.json({ success: false, message: 'Please choose unique username and email' })
-  }
-  const user = await User.create(req.body)
-  res.json({ success: true, user })
-})
-
-router.post('/profile', checkAuthentication, (req: Request, res: Response) => {
-  return res.json({ success: true, user: req.user })
-})
-
-router.post(
-  '/refreshToken',
-  [validateSchema(refreshTokenSchema), validateRefreshToken],
-  (req: Request, res: Response) => {
-    const payload = { id: req.user!._id, email: req.user!.email }
-    const accessToken = signAccessToken(payload)
-    res.json({ success: true, accessToken })
-  },
-)
+router.use('/local', local)
+router.use('/google', google)
+router.use('/token', token)
 
 export default router
