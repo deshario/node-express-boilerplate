@@ -10,7 +10,6 @@ const environment = {
   secret: {
     accessToken: process.env.ACCESS_TOKEN_SECRET || '1A1zP1eP5QGefi2DM',
     refreshToken: process.env.REFRESH_TOKEN_SECRET || 'PTfTL5SLmv7DivfNa',
-    sessionCookie: process.env.SESSION_COOKIE_SECRET || '1JHceFenZHACSRPD6tE4b',
   },
 }
 
